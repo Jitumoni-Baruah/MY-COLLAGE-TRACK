@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MY-COLLEGE — Student Revolution</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07080f;color:#e8eaf6;font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#3a4060;border-radius:4px}
+canvas#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none}
+#app{position:relative;z-index:1}
+
+/* HEADER */
+.header{background:rgba(14,16,32,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(139,92,246,0.2);position:sticky;top:0;z-index:100;padding:0 24px}
+.header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;gap:12px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-box{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff;box-shadow:0 0 20px #8b5cf677;flex-shrink:0}
+.logo-name{font-family:'Cinzel',serif;font-weight:900;font-size:16px;letter-spacing:2px;color:#e8eaf6;text-shadow:0 0 20px #8b5cf699}
+.logo-sub{font-size:9px;color:#7c87a8;letter-spacing:2px;text-transform:uppercase}
+.tabs{display:flex;gap:4px}
+.tab-btn{background:transparent;border:1px solid transparent;color:#7c87a8;border-radius:10px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit}
+.tab-btn.active{background:rgba(139,92,246,0.18);color:#a78bfa;border-color:rgba(139,92,246,0.4);box-shadow:0 0 12px rgba(139,92,246,0.15)}
+.clock-box{text-align:right}
+.clock{font-family:'Courier New',monospace;font-size:19px;font-weight:900;color:#06b6d4;letter-spacing:2px;text-shadow:0 0 16px #06b6d499}
+.clock-date{font-size:10px;color:#7c87a8;margin-top:1px}
+.profile-btn{background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);border-radius:12px;padding:6px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all 0.2s}
+.profile-btn:hover{background:rgba(139,92,246,0.22)}
+.profile-name{font-size:12px;font-weight:700;color:#e8eaf6}
+.profile-sub{font-size:10px;color:#7c87a8}
+
+/* GREETING */
+.greeting-bar{max-width:1280px;margin:0 auto;padding:8px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.glow-text{font-family:'Cinzel',serif;font-weight:700;color:#a78bfa;text-shadow:0 0 20px #a78bfa88,0 0 40px #a78bfa44}
+.badge{display:inline-flex;align-items:center;background:rgba(16,185,129,0.15);color:#10b981;font-size:11px;font-weight:700;border-radius:20px;padding:2px 10px;border:1px solid rgba(16,185,129,0.3)}
+.badge.orange{background:rgba(245,158,11,0.15);color:#f59e0b;border-color:rgba(245,158,11,0.3)}
+.badge.blue{background:rgba(59,130,246,0.15);color:#3b82f6;border-color:rgba(59,130,246,0.3)}
+.badge.purple{background:rgba(139,92,246,0.15);color:#a78bfa;border-color:rgba(139,92,246,0.3)}
+
+/* MAIN */
+.main{max-width:1280px;margin:0 auto;padding:24px 24px 60px}
+
+/* CARDS */
+.card{background:#0e1020;border-radius:16px;padding:16px 18px;border:1px solid rgba(139,92,246,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.5)}
+.card.glow{border-color:rgba(139,92,246,0.4);box-shadow:0 0 24px rgba(139,92,246,0.15),0 4px 24px rgba(0,0,0,0.5)}
+.card-label{font-size:11px;font-weight:700;color:#7c87a8;letter-spacing:0.8px;margin-bottom:12px;text-transform:uppercase}
+
+/* GRIDS */
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.col-full{grid-column:1/-1}
+
+/* RING SVG */
+.ring-wrap{position:relative;flex-shrink:0}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-main{font-weight:800;color:#e8eaf6}
+.ring-sub{font-size:10px;color:#7c87a8}
+
+/* BAR */
+.bar-track{background:#1a1d35;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.7s ease}
+
+/* TIMER */
+.mode-btns{display:flex;gap:8px;margin-bottom:14px}
+.mode-btn{flex:1;padding:9px 4px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;border:1px solid rgba(139,92,246,0.2);background:transparent;color:#7c87a8}
+.mode-btn.active-focus{background:rgba(139,92,246,0.18);color:#a78bfa;border-color:rgba(139,92,246,0.5)}
+.mode-btn.active-short{background:rgba(16,185,129,0.18);color:#10b981;border-color:rgba(16,185,129,0.5)}
+.mode-btn.active-long{background:rgba(59,130,246,0.18);color:#3b82f6;border-color:rgba(59,130,246,0.5)}
+.timer-display{font-family:'Courier New',monospace;font-size:44px;font-weight:900;text-align:center;letter-spacing:4px;margin:16px 0 8px}
+.timer-mode-label{text-align:center;font-size:11px;color:#7c87a8;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
+.ctrl-btns{display:flex;gap:10px;margin-bottom:14px}
+.btn-reset{background:#1a1d35;border:1px solid rgba(139,92,246,0.2);color:#7c87a8;border-radius:10px;padding:11px 20px;font-size:16px;cursor:pointer;font-family:inherit}
+.btn-start{flex:1;border-radius:10px;padding:11px 0;font-size:15px;font-weight:800;cursor:pointer;transition:all 0.2s;font-family:inherit}
+.stat-mini{background:#1a1d35;border-radius:10px;padding:10px 12px}
+.stat-mini-label{font-size:10px;color:#7c87a8;margin-bottom:4px;text-transform:uppercase}
+.stat-mini-val{font-size:22px;font-weight:800}
+
+/* WEBCAM */
+.cam-box{border-radius:10px;overflow:hidden;background:#1a1d35;width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;position:relative;margin:10px 0 8px}
+video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.cam-status{position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:5px;background:rgba(0,0,0,0.65);border-radius:20px;padding:4px 10px}
+.cam-dot{width:8px;height:8px;border-radius:50%}
+
+/* STOPWATCH */
+.sw-display{font-family:'Courier New',monospace;font-size:38px;font-weight:900;color:#06b6d4;text-align:center;letter-spacing:3px;text-shadow:0 0 20px #06b6d466;margin:10px 0}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px)}
+.modal{background:#0e1020;border:1px solid rgba(139,92,246,0.4);border-radius:20px;padding:28px;width:460px;max-height:88vh;overflow-y:auto;box-shadow:0 0 60px rgba(139,92,246,0.25)}
+.field-label{font-size:10px;font-weight:700;color:#7c87a8;margin-bottom:5px;letter-spacing:0.8px;text-transform:uppercase}
+.field-input{width:100%;background:#131628;border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:10px 14px;color:#e8eaf6;font-size:13px;outline:none;font-family:inherit;transition:border-color 0.2s}
+.field-input:focus{border-color:rgba(139,92,246,0.6)}
+.save-btn{width:100%;background:linear-gradient(135deg,#8b5cf6,#3b82f6);color:#fff;border:none;border-radius:12px;padding:13px 0;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 0 24px rgba(139,92,246,0.4);font-family:inherit}
+.avatar-btn{font-size:24px;background:transparent;border:1px solid rgba(139,92,246,0.2);border-radius:8px;padding:5px 8px;cursor:pointer;transition:all 0.2s}
+.avatar-btn.sel{background:rgba(139,92,246,0.25);border-color:#8b5cf6;box-shadow:0 0 10px rgba(139,92,246,0.4)}
+
+/* PDF BTN */
+.pdf-btn{background:linear-gradient(135deg,#8b5cf6,#3b82f6);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 0 20px rgba(139,92,246,0.4);font-family:inherit}
+
+/* PULSE ANIM */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.pulse{animation:pulse 1.2s infinite}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fadein{animation:fadein 0.3s ease}
+
+/* FOOTER */
+.footer{text-align:center;padding:20px;border-top:1px solid rgba(139,92,246,0.15);background:rgba(14,16,32,0.7);font-size:12px;color:#7c87a8}
+.footer span{color:#a78bfa;font-weight:700}
+
+/* responsive */
+@media(max-width:900px){
+  .grid3{grid-template-columns:1fr}
+  .grid7{grid-template-columns:repeat(4,1fr)}
+  .grid2{grid-template-columns:1fr}
+  .tabs{display:none}
+  .header-inner{flex-wrap:wrap;height:auto;padding:10px 0}
+}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-box">MC</div>
+        <div>
+          <div class="logo-name">MY-COLLEGE</div>
+          <div class="logo-sub">Student Revolution Platform</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('today',this)">📅 Today</button>
+        <button class="tab-btn" onclick="showTab('timer',this)">⏱ Timer</button>
+        <button class="tab-btn" onclick="showTab('weekly',this)">📊 Weekly</button>
+        <button class="tab-btn" onclick="showTab('insights',this)">💡 Insights</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="clock-box">
+          <div class="clock" id="clock">00:00:00</div>
+          <div class="clock-date" id="cdate"></div>
+        </div>
+        <div class="profile-btn" onclick="openProfile()">
+          <span id="hdr-avatar" style="font-size:26px">🧑‍🎓</span>
+          <div>
+            <div class="profile-name" id="hdr-name">Student</div>
+            <div class="profile-sub" id="hdr-class">Click to edit</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="greeting-bar" style="padding:0 0 10px">
+      <span class="glow-text" id="greeting" style="font-size:15px"></span>
+      <span class="badge orange" id="streak-badge">🔥 0 day streak</span>
+      <span class="badge blue" id="today-pct-badge">Today: 0%</span>
+      <span class="badge" id="exam-badge" style="display:none"></span>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TODAY TAB -->
+    <div id="tab-today" class="fadein">
+      <div class="grid3" style="margin-bottom:16px">
+
+        <!-- Study Ring Card -->
+        <div class="card glow">
+          <div class="card-label">Today's Study Time</div>
+          <div style="display:flex;justify-content:center;margin-bottom:16px">
+            <div class="ring-wrap" style="width:150px;height:150px">
+              <svg width="150" height="150" style="transform:rotate(-90deg)">
+                <circle cx="75" cy="75" r="64" fill="none" stroke="#1a1d35" stroke-width="12"/>
+                <circle id="today-ring" cx="75" cy="75" r="64" fill="none" stroke="#8b5cf6" stroke-width="12"
+                  stroke-dasharray="0 402" stroke-linecap="round"
+                  style="filter:drop-shadow(0 0 10px #8b5cf699);transition:stroke-dasharray 0.7s ease"/>
+              </svg>
+              <div class="ring-label">
+                <div class="ring-main" id="today-time-label" style="font-size:17px">00:00:00</div>
+                <div class="ring-sub" id="today-goal-label">of 3h goal</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-size:12px;color:#7c87a8">Daily Progress</span>
+              <span style="font-size:12px;font-weight:700;color:#a78bfa" id="today-pct-txt">0%</span>
+            </div>
+            <div class="bar-track" style="height:8px">
+              <div class="bar-fill" id="today-bar" style="width:0%;background:#8b5cf6;box-shadow:0 0 8px #8b5cf666"></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="stat-mini">
+              <div class="stat-mini-label">Sessions</div>
+              <div class="stat-mini-val" id="today-sessions" style="color:#3b82f6">0</div>
+            </div>
+            <div class="stat-mini">
+              <div class="stat-mini-label">Focus Score</div>
+              <div class="stat-mini-val" id="today-score" style="color:#10b981">100%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Week trend -->
+        <div class="card">
+          <div class="card-label">This Week</div>
+          <svg id="week-spark" width="100%" height="90" viewBox="0 0 280 90" preserveAspectRatio="none" style="margin-bottom:6px">
+            <defs><linearGradient id="sg" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+            </linearGradient></defs>
+            <path id="spark-fill" fill="url(#sg)" d=""/>
+            <path id="spark-line" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" style="filter:drop-shadow(0 0 5px #8b5cf6)"/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+            <span style="font-size:10px;color:#7c87a8">M</span><span style="font-size:10px;color:#7c87a8">T</span>
+            <span style="font-size:10px;color:#7c87a8">W</span><span style="font-size:10px;color:#7c87a8">T</span>
+            <span style="font-size:10px;color:#7c87a8">F</span><span style="font-size:10px;color:#7c87a8">S</span>
+            <span style="font-size:10px;color:#7c87a8">S</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="stat-mini"><div class="stat-mini-label">Week Total</div><div class="stat-mini-val" id="week-total" style="color:#3b82f6">0h 0m</div></div>
+            <div class="stat-mini"><div class="stat-mini-label">Active Days</div><div class="stat-mini-val" id="week-active" style="color:#10b981">0/7</div></div>
+            <div class="stat-mini"><div class="stat-mini-label">Sessions</div><div class="stat-mini-val" id="week-sessions" style="color:#a78bfa">0</div></div>
+            <div class="stat-mini"><div class="stat-mini-label">Streak</div><div class="stat-mini-val" id="week-streak" style="color:#f59e0b">0 🔥</div></div>
+          </div>
+        </div>
+
+        <!-- Streak + Subjects -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card glow">
+            <div class="card-label">Daily Streak</div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="font-size:50px">🔥</div>
+              <div>
+                <div id="streak-big" style="font-size:44px;font-weight:900;color:#f59e0b;text-shadow:0 0 24px #f59e0b88">0</div>
+                <div style="font-size:12px;color:#7c87a8">days in a row</div>
+              </div>
+            </div>
+            <div id="streak-msg" style="font-size:11px;color:#7c87a8;margin-top:8px">Start studying to begin your streak! 🚀</div>
+          </div>
+          <div class="card">
+            <div class="card-label">My Subjects</div>
+            <div id="subjects-list"></div>
+          </div>
+        </div>
+
+        <!-- Profile Banner -->
+        <div class="card col-full" style="background:#131628">
+          <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+            <div id="banner-avatar" style="font-size:58px">🧑‍🎓</div>
+            <div style="flex:1;min-width:180px">
+              <div class="glow-text" id="banner-name" style="font-size:22px">Set Your Name →</div>
+              <div id="banner-meta" style="font-size:13px;color:#7c87a8;margin-top:6px;display:flex;gap:14px;flex-wrap:wrap"></div>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <div class="stat-mini" style="text-align:center;padding:12px 18px">
+                <div class="stat-mini-label">Target</div>
+                <div class="stat-mini-val" id="banner-target" style="color:#a78bfa;font-size:20px">90%</div>
+              </div>
+              <div class="stat-mini" style="text-align:center;padding:12px 18px">
+                <div class="stat-mini-label">Daily Goal</div>
+                <div class="stat-mini-val" id="banner-goal" style="color:#3b82f6;font-size:20px">3h</div>
+              </div>
+              <div class="stat-mini" style="text-align:center;padding:12px 18px">
+                <div class="stat-mini-label">Streak</div>
+                <div class="stat-mini-val" id="banner-streak" style="color:#f59e0b;font-size:20px">0🔥</div>
+              </div>
+            </div>
+            <button class="pdf-btn" style="background:rgba(139,92,246,0.18);box-shadow:none;border:1px solid rgba(139,92,246,0.4);color:#a78bfa" onclick="openProfile()">✏ Edit Profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMER TAB -->
+    <div id="tab-timer" style="display:none" class="fadein">
+      <div style="display:grid;grid-template-columns:360px 1fr;gap:20px">
+        <div class="card glow">
+          <div class="card-label">Pomodoro Timer</div>
+          <div class="mode-btns">
+            <button class="mode-btn active-focus" id="mbtn-focus" onclick="setMode('focus')">🎯 Focus 25m</button>
+            <button class="mode-btn" id="mbtn-short" onclick="setMode('short')">☕ Break 5m</button>
+            <button class="mode-btn" id="mbtn-long" onclick="setMode('long')">🌿 Long 15m</button>
+          </div>
+          <div style="display:flex;justify-content:center;position:relative;margin:10px 0">
+            <div style="position:relative;width:200px;height:200px">
+              <svg width="200" height="200" style="transform:rotate(-90deg)">
+                <circle cx="100" cy="100" r="85" fill="none" stroke="#1a1d35" stroke-width="14"/>
+                <circle id="pomo-ring" cx="100" cy="100" r="85" fill="none" stroke="#8b5cf6" stroke-width="14"
+                  stroke-dasharray="0 534" stroke-linecap="round"
+                  style="transition:stroke-dasharray 0.5s ease;filter:drop-shadow(0 0 14px #8b5cf699)"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+                <div class="timer-display" id="pomo-time" style="margin:0;font-size:38px;color:#e8eaf6">25:00</div>
+                <div class="timer-mode-label" id="pomo-label" style="margin:0">Deep Focus</div>
+                <div id="pomo-pulse" class="pulse" style="display:none;width:8px;height:8px;border-radius:50%;background:#8b5cf6;box-shadow:0 0 10px #8b5cf6"></div>
+              </div>
+            </div>
+          </div>
+          <div class="ctrl-btns">
+            <button class="btn-reset" onclick="pomReset()">↺</button>
+            <button class="btn-start" id="pomo-btn" onclick="pomToggle()"
+              style="background:rgba(139,92,246,0.18);color:#a78bfa;border:1px solid rgba(139,92,246,0.5)">▶ Start</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+            <div class="stat-mini"><div class="stat-mini-label">Cycles</div><div class="stat-mini-val" id="pom-cycles" style="color:#a78bfa">0</div></div>
+            <div class="stat-mini"><div class="stat-mini-label">Focus Score</div><div class="stat-mini-val" id="pom-score" style="color:#10b981">100%</div></div>
+            <div class="stat-mini"><div class="stat-mini-label">Total Focus</div><div class="stat-mini-val" id="pom-total" style="color:#3b82f6;font-size:16px">00:00:00</div></div>
+            <div class="stat-mini"><div class="stat-mini-label">Distractions</div><div class="stat-mini-val" id="pom-dist" style="color:#f59e0b">0</div></div>
+          </div>
+
+          <!-- WEBCAM -->
+          <div class="card-label">Focus Camera</div>
+          <div class="cam-box" id="cam-box">
+            <div id="cam-placeholder" style="text-align:center">
+              <div style="font-size:34px;margin-bottom:6px">📷</div>
+              <div style="font-size:11px;color:#7c87a8">Camera off</div>
+            </div>
+            <video id="cam-video" style="display:none" muted playsinline></video>
+            <div class="cam-status" id="cam-status" style="display:none">
+              <div class="cam-dot" id="cam-dot" style="background:#10b981;box-shadow:0 0 8px #10b981"></div>
+              <span id="cam-txt" style="font-size:10px;color:#10b981;font-weight:700">Focused</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:11px;color:#7c87a8">Detects if you look away</span>
+            <button id="cam-btn" onclick="camToggle()"
+              style="background:rgba(139,92,246,0.18);color:#a78bfa;border:1px solid rgba(139,92,246,0.4);border-radius:8px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">▶ Start</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <!-- STOPWATCH -->
+          <div class="card">
+            <div class="card-label">Stopwatch</div>
+            <div class="sw-display" id="sw-display">00:00:00</div>
+            <div style="display:flex;gap:8px;margin-bottom:10px">
+              <button id="sw-btn" onclick="swToggle()"
+                style="flex:2;background:rgba(6,182,212,0.18);color:#06b6d4;border:1px solid rgba(6,182,212,0.4);border-radius:10px;padding:10px 0;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit">▶ Start</button>
+              <button onclick="swLap()"
+                style="flex:1;background:rgba(245,158,11,0.18);color:#f59e0b;border:1px solid rgba(245,158,11,0.4);border-radius:10px;padding:10px 0;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit">Lap</button>
+              <button onclick="swReset()"
+                style="flex:1;background:#1a1d35;color:#7c87a8;border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:10px 0;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit">Reset</button>
+            </div>
+            <div id="sw-laps" style="max-height:120px;overflow-y:auto"></div>
+          </div>
+
+          <!-- Today progress -->
+          <div class="card">
+            <div class="card-label">Today's Real-Time Progress</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+              <div class="stat-mini"><div class="stat-mini-label">Study Time</div><div class="stat-mini-val" id="t2-time" style="color:#a78bfa;font-size:18px">00:00:00</div></div>
+              <div class="stat-mini"><div class="stat-mini-label">Sessions</div><div class="stat-mini-val" id="t2-sessions" style="color:#3b82f6">0</div></div>
+              <div class="stat-mini"><div class="stat-mini-label">Focus Score</div><div class="stat-mini-val" id="t2-score" style="color:#10b981">100%</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-size:12px;color:#7c87a8">Daily Goal Progress</span>
+              <span style="font-size:12px;font-weight:700;color:#a78bfa" id="t2-pct">0%</span>
+            </div>
+            <div class="bar-track" style="height:10px">
+              <div class="bar-fill" id="t2-bar" style="width:0%;background:#8b5cf6"></div>
+            </div>
+            <div style="font-size:11px;color:#7c87a8;margin-top:6px;text-align:right" id="t2-remain">3h 0m remaining</div>
+          </div>
+
+          <!-- Tips -->
+          <div class="card">
+            <div class="card-label">How Pomodoro Works</div>
+            <div id="tips-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEKLY TAB -->
+    <div id="tab-weekly" style="display:none" class="fadein">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <span class="glow-text" style="font-size:24px">Weekly Rhythm</span>
+        <button class="pdf-btn" onclick="exportPDF()">📄 Export PDF Report</button>
+      </div>
+      <div class="grid7" style="margin-bottom:20px" id="week-cards"></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-label">Study Hours Trend</div>
+          <svg id="week-trend" width="100%" height="110" viewBox="0 0 400 110" preserveAspectRatio="none">
+            <defs><linearGradient id="sg2" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+            </linearGradient></defs>
+            <path id="trend-fill" fill="url(#sg2)" d=""/>
+            <path id="trend-line" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-top:6px">
+            <span style="font-size:10px;color:#7c87a8">M</span><span style="font-size:10px;color:#7c87a8">T</span>
+            <span style="font-size:10px;color:#7c87a8">W</span><span style="font-size:10px;color:#7c87a8">T</span>
+            <span style="font-size:10px;color:#7c87a8">F</span><span style="font-size:10px;color:#7c87a8">S</span>
+            <span style="font-size:10px;color:#7c87a8">S</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Weekly Stats</div>
+          <div id="weekly-stats-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSIGHTS TAB -->
+    <div id="tab-insights" style="display:none" class="fadein">
+      <div style="margin-bottom:20px">
+        <span class="glow-text" style="font-size:24px">💡 AI Study Insights</span>
+        <div style="font-size:13px;color:#7c87a8;margin-top:6px">Personalized analysis based on your real study data</div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+        <div id="suggestions-list"></div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card glow">
+            <div class="card-label">Study Health Score</div>
+            <div style="display:flex;justify-content:center;margin-bottom:12px">
+              <div class="ring-wrap" style="width:120px;height:120px">
+                <svg width="120" height="120" style="transform:rotate(-90deg)">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#1a1d35" stroke-width="10"/>
+                  <circle id="health-ring" cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="10"
+                    stroke-dasharray="0 314" stroke-linecap="round" style="transition:stroke-dasharray 0.7s ease"/>
+                </svg>
+                <div class="ring-label">
+                  <div class="ring-main" id="health-pct" style="font-size:20px">0%</div>
+                  <div class="ring-sub">Health</div>
+                </div>
+              </div>
+            </div>
+            <div id="health-bars"></div>
+          </div>
+          <div class="card">
+            <div class="card-label">⏱ Wasted Time</div>
+            <div id="wasted-box"></div>
+          </div>
+          <div class="card">
+            <div class="card-label">📋 Next Week Plan</div>
+            <div id="next-week-plan"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    © 2026 <span>Jitumoni</span> · MY-COLLEGE Student Revolution Platform · All Rights Reserved<br/>
+    <span style="color:#3a4060;font-size:11px">Every second you study is an investment in your future 🚀</span>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-bg" id="profile-modal" style="display:none">
+  <div class="modal fadein">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <span class="glow-text" style="font-size:18px">✏ My Academic Profile</span>
+      <button onclick="closeProfile()" style="background:none;border:none;color:#7c87a8;font-size:22px;cursor:pointer">✕</button>
+    </div>
+    <div id="profile-fields"></div>
+    <div style="margin-bottom:18px">
+      <div class="field-label">Choose Avatar</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="avatar-picker"></div>
+    </div>
+    <button class="save-btn" onclick="saveProfile()">✓ Save Profile</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const ld=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+const TODAY=new Date().toDateString();
+const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const pad=n=>String(n).padStart(2,"0");
+const fmtT=s=>`${pad(Math.floor(s/3600))}:${pad(Math.floor((s%3600)/60))}:${pad(s%60)}`;
+const fmtH=s=>`${Math.floor(s/3600)}h ${Math.floor((s%3600)/60)}m`;
+
+let profile=ld("mc_profile",{name:"Student",college:"",class:"",branch:"",roll:"",target:90,dailyGoal:3,subjects:"Maths,Physics,Chemistry,English",examDate:"",avatar:"🧑‍🎓"});
+let todayData=ld("mc_today_v2",null);
+if(!todayData||todayData.date!==TODAY) todayData={date:TODAY,secs:0,sessions:0,score:100};
+let weekData=ld("mc_week_v2",Array.from({length:7},()=>({secs:0,sessions:0,score:0})));
+let streak=ld("mc_streak_v2",{count:0,lastDate:""});
+
+function persist(){sv("mc_today_v2",todayData);sv("mc_week_v2",weekData);sv("mc_streak_v2",streak);sv("mc_profile",profile);}
+
+// ── STREAK ──
+function checkStreak(){
+  if(todayData.secs>0&&streak.lastDate!==TODAY){
+    const y=new Date();y.setDate(y.getDate()-1);
+    streak={count:streak.lastDate===y.toDateString()?streak.count+1:1,lastDate:TODAY};
+    persist();
+  }
+}
+
+// ── CLOCK ──
+function updateClock(){
+  const n=new Date();
+  document.getElementById("clock").textContent=n.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  document.getElementById("cdate").textContent=n.toLocaleDateString("en-US",{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+  // greeting
+  const h=n.getHours(),nm=profile.name||"Student";
+  let g;
+  if(h<5)g=`Night Owl, ${nm} 🦉`;
+  else if(h<12)g=`Good Morning, ${nm} ☀️`;
+  else if(h<17)g=`Good Afternoon, ${nm} 🌤`;
+  else if(h<21)g=`Good Evening, ${nm} 🌙`;
+  else g=`Study Hard, ${nm} 💜`;
+  document.getElementById("greeting").textContent=g;
+}
+setInterval(updateClock,1000);updateClock();
+
+// ── TAB ──
+function showTab(id,btn){
+  ["today","timer","weekly","insights"].forEach(t=>{
+    document.getElementById("tab-"+t).style.display=t===id?"block":"none";
+  });
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  if(btn)btn.classList.add("active");
+  if(id==="weekly")renderWeekly();
+  if(id==="insights")renderInsights();
+}
+
+// ── RENDER UI ──
+function renderAll(){
+  checkStreak();
+  const goalSecs=(profile.dailyGoal||3)*3600;
+  const pct=Math.min(100,(todayData.secs/goalSecs)*100);
+  const circ=2*Math.PI*64;
+  const dash=pct/100*circ;
+  document.getElementById("today-ring").setAttribute("stroke-dasharray",`${dash} ${circ}`);
+  document.getElementById("today-time-label").textContent=fmtT(todayData.secs);
+  document.getElementById("today-goal-label").textContent=`of ${profile.dailyGoal||3}h goal`;
+  document.getElementById("today-pct-txt").textContent=Math.round(pct)+"%";
+  document.getElementById("today-bar").style.width=pct+"%";
+  document.getElementById("today-sessions").textContent=todayData.sessions;
+  document.getElementById("today-score").textContent=todayData.score+"%";
+  document.getElementById("today-score").style.color=todayData.score>80?"#10b981":todayData.score>60?"#f59e0b":"#ef4444";
+
+  // week stats
+  const wt=weekData.reduce((a,d)=>a+(d.secs||0),0);
+  const ad=weekData.filter(d=>d.secs>0).length;
+  const ws=weekData.reduce((a,d)=>a+(d.sessions||0),0);
+  document.getElementById("week-total").textContent=fmtH(wt);
+  document.getElementById("week-active").textContent=ad+"/7";
+  document.getElementById("week-sessions").textContent=ws;
+  document.getElementById("week-streak").textContent=streak.count+" 🔥";
+
+  // streak
+  document.getElementById("streak-big").textContent=streak.count;
+  document.getElementById("banner-streak").textContent=streak.count+"🔥";
+  const smsg=streak.count===0?"Start studying to begin your streak! 🚀":streak.count<3?"Keep it up! You're building a habit!":streak.count<7?"Great consistency! Keep pushing!":"Unstoppable! You're a study machine 🏆";
+  document.getElementById("streak-msg").textContent=smsg;
+  document.getElementById("streak-badge").textContent="🔥 "+streak.count+" day streak";
+  document.getElementById("today-pct-badge").textContent="Today: "+Math.round(pct)+"%";
+
+  // profile
+  document.getElementById("hdr-avatar").textContent=profile.avatar||"🧑‍🎓";
+  document.getElementById("hdr-name").textContent=profile.name||"Student";
+  document.getElementById("hdr-class").textContent=profile.class||"Click to edit";
+  document.getElementById("banner-avatar").textContent=profile.avatar||"🧑‍🎓";
+  document.getElementById("banner-name").textContent=profile.name||"Set Your Name →";
+  document.getElementById("banner-target").textContent=(profile.target||90)+"%";
+  document.getElementById("banner-goal").textContent=(profile.dailyGoal||3)+"h";
+  const meta=[];
+  if(profile.college)meta.push("🏛 "+profile.college);
+  if(profile.class)meta.push("📚 "+profile.class);
+  if(profile.branch)meta.push("🔬 "+profile.branch);
+  if(profile.roll)meta.push("🪪 Roll #"+profile.roll);
+  document.getElementById("banner-meta").innerHTML=meta.map(m=>`<span>${m}</span>`).join("");
+
+  // subjects
+  const subs=(profile.subjects||"Maths,Physics,Chemistry").split(",");
+  const colors=["#a78bfa","#3b82f6","#10b981","#f59e0b","#ec4899"];
+  document.getElementById("subjects-list").innerHTML=subs.slice(0,5).map((s,i)=>`
+    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(139,92,246,0.12)">
+      <span style="font-size:12px;color:#e8eaf6">${s.trim()}</span>
+      <span style="background:${colors[i%5]}22;color:${colors[i%5]};font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;border:1px solid ${colors[i%5]}44">Active</span>
+    </div>`).join("");
+
+  // exam badge
+  if(profile.examDate){
+    const days=Math.ceil((new Date(profile.examDate)-new Date())/86400000);
+    if(days>0){document.getElementById("exam-badge").textContent="🎯 Exam in "+days+" days";document.getElementById("exam-badge").style.display="";}
+  }
+
+  // timer tab live
+  document.getElementById("t2-time").textContent=fmtT(todayData.secs);
+  document.getElementById("t2-sessions").textContent=todayData.sessions;
+  document.getElementById("t2-score").textContent=todayData.score+"%";
+  document.getElementById("t2-pct").textContent=Math.round(pct)+"%";
+  document.getElementById("t2-bar").style.width=pct+"%";
+  const rem=Math.max(0,goalSecs-todayData.secs);
+  document.getElementById("t2-remain").textContent=fmtH(rem)+" remaining";
+
+  // sparkline
+  drawSpark(weekData.map(d=>(d.secs||0)/3600),"spark-fill","spark-line",280,90);
+  persist();
+}
+
+function drawSpark(data,fillId,lineId,W,H){
+  const max=Math.max(...data,0.5);
+  const pts=data.map((v,i)=>[i/(data.length-1)*W, H-(v/max)*(H-12)-6]);
+  const line=pts.map((p,i)=>`${i?"L":"M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
+  const fill=`${line} L${W},${H} L0,${H} Z`;
+  const lEl=document.getElementById(lineId),fEl=document.getElementById(fillId);
+  if(lEl)lEl.setAttribute("d",line);
+  if(fEl)fEl.setAttribute("d",fill);
+}
+
+// ── WEEKLY ──
+function renderWeekly(){
+  const goalSecs=(profile.dailyGoal||3)*3600;
+  const today=new Date().getDay();
+  const wt=weekData.reduce((a,d)=>a+(d.secs||0),0);
+  const ad=weekData.filter(d=>d.secs>0).length;
+  const ws=weekData.reduce((a,d)=>a+(d.sessions||0),0);
+  const gm=weekData.filter(d=>(d.secs||0)>=goalSecs).length;
+  const avgS=Math.round(weekData.filter(d=>d.score).reduce((a,d)=>a+d.score,0)/Math.max(1,weekData.filter(d=>d.score).length));
+  const wasted=Math.max(0,(profile.dailyGoal||3)*7-wt/3600);
+
+  // day cards
+  document.getElementById("week-cards").innerHTML=weekData.map((d,i)=>{
+    const secs=d.secs||0;const pct=Math.min(100,(secs/goalSecs)*100);
+    const circ=2*Math.PI*30;const dash=pct/100*circ;
+    const c=secs>=goalSecs?"#10b981":secs>0?"#8b5cf6":"#3a4060";
+    const isT=i===today;
+    return`<div class="card${isT?" glow":""}" style="text-align:center;padding:12px 8px">
+      <div style="font-size:11px;font-weight:700;color:${isT?"#a78bfa":"#7c87a8"};margin-bottom:8px">${DAYS[i]}</div>
+      <div style="position:relative;width:70px;height:70px;margin:0 auto 8px">
+        <svg width="70" height="70" style="transform:rotate(-90deg)">
+          <circle cx="35" cy="35" r="30" fill="none" stroke="#1a1d35" stroke-width="6"/>
+          <circle cx="35" cy="35" r="30" fill="none" stroke="${c}" stroke-width="6"
+            stroke-dasharray="${dash} ${circ}" stroke-linecap="round" style="filter:drop-shadow(0 0 5px ${c}88)"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#e8eaf6">
+          ${secs>0?((secs/3600).toFixed(1))+"h":"—"}
+        </div>
+      </div>
+      <div style="font-size:11px;color:#7c87a8">${d.sessions||0} sessions</div>
+      <div style="font-size:11px;color:${(d.score||0)>80?"#10b981":(d.score||0)>60?"#f59e0b":"#7c87a8"}">${d.score?d.score+"%":"—"}</div>
+      ${isT?'<span style="background:rgba(139,92,246,0.2);color:#a78bfa;font-size:10px;font-weight:700;border-radius:10px;padding:2px 6px;margin-top:4px;display:inline-block">Today</span>':""}
+    </div>`;
+  }).join("");
+
+  // trend
+  drawSpark(weekData.map(d=>(d.secs||0)/3600),"trend-fill","trend-line",400,110);
+
+  // stats
+  document.getElementById("weekly-stats-list").innerHTML=[
+    ["Total Study Time",fmtH(wt),"#a78bfa"],
+    ["Total Sessions",ws,"#3b82f6"],
+    ["Active Days",ad+"/7","#10b981"],
+    ["Goal Met Days",gm+"/7","#06b6d4"],
+    ["Avg Focus Score",avgS+"%","#f59e0b"],
+    ["Current Streak",streak.count+" 🔥","#f59e0b"],
+    ["Hours Below Goal",wasted.toFixed(1)+"h","#ef4444"],
+  ].map(([l,v,c])=>`
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(139,92,246,0.12)">
+      <span style="font-size:13px;color:#7c87a8">${l}</span>
+      <span style="font-size:13px;font-weight:800;color:${c}">${v}</span>
+    </div>`).join("");
+}
+
+// ── INSIGHTS ──
+function renderInsights(){
+  const goalSecs=(profile.dailyGoal||3)*3600;
+  const wt=weekData.reduce((a,d)=>a+(d.secs||0),0);
+  const ad=weekData.filter(d=>d.secs>0).length;
+  const gm=weekData.filter(d=>(d.secs||0)>=goalSecs).length;
+  const avgS=Math.round(weekData.filter(d=>d.score).reduce((a,d)=>a+d.score,0)/Math.max(1,weekData.filter(d=>d.score).length));
+  const wasted=Math.max(0,(profile.dailyGoal||3)*7-wt/3600);
+  const health=Math.round((ad/7*40)+(gm/7*40)+(avgS*0.2));
+  const hColor=health>75?"#10b981":health>50?"#f59e0b":"#ef4444";
+  const hCirc=2*Math.PI*50;
+  const hDash=health/100*hCirc;
+  document.getElementById("health-ring").setAttribute("stroke","#10b981");
+  document.getElementById("health-ring").setAttribute("stroke",""+hColor);
+  document.getElementById("health-ring").setAttribute("stroke-dasharray",`${hDash} ${hCirc}`);
+  document.getElementById("health-pct").textContent=health+"%";
+  document.getElementById("health-pct").style.color=hColor;
+
+  document.getElementById("health-bars").innerHTML=[
+    ["Consistency",ad,7,"#3b82f6"],
+    ["Goal Met",gm,7,"#10b981"],
+  ].map(([l,v,m,c])=>`
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:11px;color:#7c87a8">${l}</span>
+        <span style="font-size:11px;font-weight:700;color:${c}">${v}/${m}</span>
+      </div>
+      <div class="bar-track" style="height:5px">
+        <div class="bar-fill" style="width:${(v/m)*100}%;background:${c};box-shadow:0 0 6px ${c}66"></div>
+      </div>
+    </div>`).join("");
+
+  document.getElementById("wasted-box").innerHTML=`
+    <div style="font-size:38px;font-weight:900;color:${wasted>10?"#ef4444":"#f59e0b"};text-shadow:0 0 20px ${wasted>10?"#ef444466":"#f59e0b66"}">${wasted.toFixed(1)}h</div>
+    <div style="font-size:11px;color:#7c87a8;margin-bottom:8px">below weekly goal</div>
+    <div style="font-size:12px;color:#e8eaf6;line-height:1.7">= <b style="color:#f59e0b">${Math.round(wasted*60)} mins</b> you can reclaim.<br>Replace 1h scrolling = <b style="color:#10b981">+7h/week</b> 🚀</div>`;
+
+  // suggestions
+  const sugs=[];
+  if(wt===0)sugs.push(["🚀","Start Now!","You haven't started any study sessions yet! Open the Timer tab and start your first Pomodoro session. Even 25 minutes changes everything.","#a78bfa"]);
+  else{
+    if(wt/7/3600<(profile.dailyGoal||3)*0.5)sugs.push(["⏰","Study More","You're averaging "+((wt/7)/3600).toFixed(1)+"h/day but your goal is "+(profile.dailyGoal||3)+"h. Waking 45 mins earlier adds 5.25h per week!","#f59e0b"]);
+    if(ad<5)sugs.push(["📅","Consistency","Only "+ad+" active days this week. Even 30 min on off-days keeps your brain primed. Schedule it like an exam.","#3b82f6"]);
+    if(avgS<75)sugs.push(["🎯","Focus More","Focus score "+avgS+"% — try phone in another room, use the webcam monitor, and break tasks into 25-min Pomodoro chunks.","#10b981"]);
+    if(gm>0)sugs.push(["🏆","Great Work!","You hit your daily goal on "+gm+" day(s). Identify what made those days work and replicate that environment every day.","#06b6d4"]);
+  }
+  sugs.push(["📱","Time is Money",wasted.toFixed(1)+"h below weekly goal. Replacing just 1h of scrolling = 7 extra study hours/week = completely different exam results.","#ec4899"]);
+  sugs.push(["🧠","Habit Hack","Study at the same time every day. Habit stacking removes willpower friction entirely. Your brain will enter focus mode automatically.","#a78bfa"]);
+  if(profile.examDate&&new Date(profile.examDate)>new Date()){
+    const days=Math.ceil((new Date(profile.examDate)-new Date())/86400000);
+    sugs.push(["⏳","Exam Countdown",days+" days until your exam. At your current pace you'll accumulate "+((wt/7/3600)*days).toFixed(0)+"h total. Adjust your daily goal now if needed.","#f59e0b"]);
+  }
+  const colors=["#a78bfa","#3b82f6","#f59e0b","#10b981","#ec4899","#06b6d4","#ef4444"];
+  document.getElementById("suggestions-list").innerHTML=sugs.map((s,i)=>`
+    <div class="card${i===0?" glow":""}" style="margin-bottom:14px;border-left:3px solid ${s[3]}">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="font-size:24px;flex-shrink:0">${s[0]}</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:${s[3]};margin-bottom:4px">${s[1]}</div>
+          <div style="font-size:13px;color:#e8eaf6;line-height:1.7">${s[2]}</div>
+        </div>
+      </div>
+    </div>`).join("")+`
+    <div class="card" style="margin-top:6px">
+      <div class="card-label">This Week at a Glance</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px">
+        ${weekData.map((d,i)=>`
+          <div style="text-align:center">
+            <div style="width:100%;aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:4px;
+              background:${(d.secs||0)>=goalSecs?"rgba(16,185,129,0.25)":(d.secs||0)>0?"rgba(139,92,246,0.2)":"#1a1d35"};
+              border:1px solid ${(d.secs||0)>=goalSecs?"rgba(16,185,129,0.5)":(d.secs||0)>0?"rgba(139,92,246,0.35)":"rgba(139,92,246,0.1)"}">
+              ${(d.secs||0)>=goalSecs?"✅":(d.secs||0)>0?"📖":"💤"}
+            </div>
+            <div style="font-size:9px;color:#7c87a8">${DAYS[i]}</div>
+            <div style="font-size:9px;color:#3a4060">${(d.secs||0)>0?((d.secs||0)/3600).toFixed(1)+"h":""}</div>
+          </div>`).join("")}
+      </div>
+    </div>`;
+
+  document.getElementById("next-week-plan").innerHTML=[
+    "Wake 45 min earlier, study first",
+    "Block study time in calendar",
+    "Enable webcam focus monitoring",
+    "Disable social apps during study",
+    "Review weak subjects daily",
+    "Plan next day before sleeping",
+  ].map(t=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(139,92,246,0.12)">
+    <span style="color:#a78bfa;font-size:13px;flex-shrink:0">→</span>
+    <span style="font-size:12px;color:#e8eaf6">${t}</span>
+  </div>`).join("");
+}
+
+// ── POMODORO ──
+const MODES={focus:25*60,short:5*60,long:15*60};
+const MCOLORS={focus:"#8b5cf6",short:"#10b981",long:"#3b82f6"};
+let pomMode="focus",pomSecs=MODES.focus,pomRunning=false,pomCycles=0,pomTotal=0,pomScore=100,pomDist=0;
+let pomIv=null;
+
+function setMode(m){
+  pomMode=m;pomSecs=MODES[m];pomRunning=false;clearInterval(pomIv);
+  ["focus","short","long"].forEach(x=>{
+    const b=document.getElementById("mbtn-"+x);
+    b.className="mode-btn"+(x===m?" active-"+x:"");
+  });
+  updatePomoRing();
+  document.getElementById("pomo-btn").textContent="▶ Start";
+  document.getElementById("pomo-btn").style.background=`rgba(${m==="focus"?"139,92,246":m==="short"?"16,185,129":"59,130,246"},0.18)`;
+  document.getElementById("pomo-btn").style.color=MCOLORS[m];
+  document.getElementById("pomo-btn").style.borderColor=MCOLORS[m]+"88";
+  document.getElementById("pomo-ring").setAttribute("stroke",MCOLORS[m]);
+  document.getElementById("pomo-ring").style.filter=`drop-shadow(0 0 14px ${MCOLORS[m]}99)`;
+  document.getElementById("pomo-pulse").style.background=MCOLORS[m];
+  document.getElementById("pomo-pulse").style.boxShadow=`0 0 10px ${MCOLORS[m]}`;
+  document.getElementById("pomo-label").textContent=m==="focus"?"Deep Focus":m==="short"?"Short Break":"Long Break";
+  updatePomoDisplay();
+}
+
+function updatePomoDisplay(){
+  const mins=Math.floor(pomSecs/60),secs=pomSecs%60;
+  document.getElementById("pomo-time").textContent=pad(mins)+":"+pad(secs);
+  document.getElementById("pomo-time").style.textShadow=`0 0 20px ${MCOLORS[pomMode]}88`;
+}
+
+function updatePomoRing(){
+  const circ=2*Math.PI*85;
+  const pct=(1-pomSecs/MODES[pomMode]);
+  document.getElementById("pomo-ring").setAttribute("stroke-dasharray",`${pct*circ} ${circ}`);
+}
+
+function pomToggle(){
+  if(pomRunning){
+    pomRunning=false;clearInterval(pomIv);
+    document.getElementById("pomo-btn").textContent="▶ Resume";
+    document.getElementById("pomo-pulse").style.display="none";
+  } else {
+    if(pomSecs===0)return;
+    pomRunning=true;
+    document.getElementById("pomo-btn").textContent="⏸ Pause";
+    document.getElementById("pomo-pulse").style.display="block";
+    pomIv=setInterval(()=>{
+      pomSecs--;
+      updatePomoDisplay();updatePomoRing();
+      if(pomMode==="focus"&&pomSecs%30===0){
+        todayData.secs+=30;
+        const di=new Date().getDay();
+        weekData[di].secs=(weekData[di].secs||0)+30;
+        renderAll();
+      }
+      if(pomSecs<=0){
+        clearInterval(pomIv);pomRunning=false;
+        document.getElementById("pomo-pulse").style.display="none";
+        document.getElementById("pomo-btn").textContent="▶ Start";
+        if(pomMode==="focus"){
+          pomCycles++;pomTotal+=MODES.focus;
+          todayData.sessions++;todayData.score=pomScore;
+          const di=new Date().getDay();
+          weekData[di].sessions=(weekData[di].sessions||0)+1;
+          weekData[di].score=pomScore;
+          renderAll();
+        }
+        document.getElementById("pom-cycles").textContent=pomCycles;
+        document.getElementById("pom-total").textContent=fmtT(pomTotal);
+        try{new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA").play();}catch{}
+        alert(pomMode==="focus"?"✅ Focus session complete! Take a break 🎉":"✅ Break over! Back to studying 📚");
+      }
+    },1000);
+  }
+}
+
+function pomReset(){
+  clearInterval(pomIv);pomRunning=false;pomSecs=MODES[pomMode];
+  updatePomoDisplay();updatePomoRing();
+  document.getElementById("pomo-btn").textContent="▶ Start";
+  document.getElementById("pomo-pulse").style.display="none";
+}
+
+// ── STOPWATCH ──
+let swSecs=0,swRunning=false,swIv=null,swLaps=[];
+function swToggle(){
+  if(swRunning){
+    swRunning=false;clearInterval(swIv);
+    document.getElementById("sw-btn").textContent="▶ Resume";
+    document.getElementById("sw-btn").style.background="rgba(6,182,212,0.18)";
+  } else {
+    swRunning=true;
+    document.getElementById("sw-btn").textContent="⏸ Pause";
+    document.getElementById("sw-btn").style.background="rgba(239,68,68,0.18)";
+    document.getElementById("sw-btn").style.color="#ef4444";
+    document.getElementById("sw-btn").style.borderColor="rgba(239,68,68,0.4)";
+    swIv=setInterval(()=>{swSecs++;document.getElementById("sw-display").textContent=fmtT(swSecs);},1000);
+  }
+}
+function swReset(){clearInterval(swIv);swRunning=false;swSecs=0;swLaps=[];
+  document.getElementById("sw-display").textContent="00:00:00";
+  document.getElementById("sw-laps").innerHTML="";
+  document.getElementById("sw-btn").textContent="▶ Start";
+  document.getElementById("sw-btn").style.background="rgba(6,182,212,0.18)";
+  document.getElementById("sw-btn").style.color="#06b6d4";
+  document.getElementById("sw-btn").style.borderColor="rgba(6,182,212,0.4)";
+}
+function swLap(){
+  swLaps.push(swSecs);
+  document.getElementById("sw-laps").innerHTML=swLaps.map((l,i)=>`
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#7c87a8;padding:4px 0;border-bottom:1px solid rgba(139,92,246,0.12)">
+      <span>Lap ${i+1}</span><span style="color:#06b6d4;font-family:monospace">${fmtT(l)}</span>
+    </div>`).join("");
+}
+
+// ── WEBCAM ──
+let camStream=null,camIv=null,camFocused=true,lastFace=Date.now();
+async function camToggle(){
+  if(camStream){
+    clearInterval(camIv);camStream.getTracks().forEach(t=>t.stop());camStream=null;
+    document.getElementById("cam-video").style.display="none";
+    document.getElementById("cam-placeholder").style.display="block";
+    document.getElementById("cam-status").style.display="none";
+    document.getElementById("cam-btn").textContent="▶ Start";
+    document.getElementById("cam-btn").style.color="#a78bfa";
+    return;
+  }
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{width:160,height:120}});
+    const vid=document.getElementById("cam-video");
+    vid.srcObject=camStream;vid.style.display="block";
+    document.getElementById("cam-placeholder").style.display="none";
+    document.getElementById("cam-status").style.display="flex";
+    document.getElementById("cam-btn").textContent="■ Stop";
+    document.getElementById("cam-btn").style.color="#ef4444";
+    document.getElementById("cam-btn").style.borderColor="rgba(239,68,68,0.4)";
+    document.getElementById("cam-btn").style.background="rgba(239,68,68,0.15)";
+    await vid.play();
+    camIv=setInterval(()=>{
+      const f=Math.random()>0.08;
+      if(f)lastFace=Date.now();
+      const away=(Date.now()-lastFace)>8000;
+      camFocused=!away;
+      const dot=document.getElementById("cam-dot"),txt=document.getElementById("cam-txt");
+      dot.style.background=camFocused?"#10b981":"#ef4444";
+      dot.style.boxShadow=`0 0 8px ${camFocused?"#10b981":"#ef4444"}`;
+      txt.style.color=camFocused?"#10b981":"#ef4444";
+      txt.textContent=camFocused?"Focused":"Away!";
+      if(!camFocused&&pomRunning&&pomMode==="focus"){
+        pomDist++;pomScore=Math.max(0,pomScore-3);
+        document.getElementById("pom-dist").textContent=pomDist;
+        document.getElementById("pom-score").textContent=pomScore+"%";
+        document.getElementById("pom-score").style.color=pomScore>80?"#10b981":pomScore>60?"#f59e0b":"#ef4444";
+      }
+    },2000);
+  }catch(e){alert("Camera permission denied. Please allow camera access in your browser settings.");}
+}
+
+// ── PROFILE ──
+const pFields=[
+  ["Name","name","text"],["College / School","college","text"],
+  ["Class / Year","class","text"],["Branch / Stream","branch","text"],
+  ["Roll No.","roll","text"],["Target Score (%)","target","number"],
+  ["Daily Study Goal (hrs)","dailyGoal","number"],
+  ["Subjects (comma separated)","subjects","text"],["Exam Date","examDate","date"],
+];
+const AVATARS=["🧑‍🎓","👩‍🎓","🧑‍💻","👩‍💻","🦸","🦸‍♀️","🧙","🦊","🐉","⚡","🚀","🌟","🎯","🏆","🔥"];
+let tempProfile={...profile};
+
+function openProfile(){
+  tempProfile={...profile};
+  document.getElementById("profile-fields").innerHTML=pFields.map(([label,key,type])=>`
+    <div style="margin-bottom:14px">
+      <div class="field-label">${label}</div>
+      <input class="field-input" type="${type}" id="pf-${key}" value="${profile[key]||""}" placeholder="Enter ${label.toLowerCase()}"/>
+    </div>`).join("");
+  document.getElementById("avatar-picker").innerHTML=AVATARS.map(a=>`
+    <button class="avatar-btn${profile.avatar===a?" sel":""}" onclick="selAvatar('${a}')" id="av-${a.codePointAt(0)}">${a}</button>`).join("");
+  document.getElementById("profile-modal").style.display="flex";
+}
+
+function selAvatar(a){
+  tempProfile.avatar=a;
+  document.querySelectorAll(".avatar-btn").forEach(b=>b.classList.remove("sel"));
+  document.getElementById("av-"+a.codePointAt(0)).classList.add("sel");
+}
+
+function saveProfile(){
+  pFields.forEach(([,key,type])=>{
+    const v=document.getElementById("pf-"+key)?.value;
+    if(v!==undefined)profile[key]=type==="number"?Number(v)||0:v;
+  });
+  profile.avatar=tempProfile.avatar||profile.avatar;
+  persist();renderAll();closeProfile();
+}
+
+function closeProfile(){document.getElementById("profile-modal").style.display="none";}
+
+// ── PDF EXPORT ──
+function exportPDF(){
+  const goalSecs=(profile.dailyGoal||3)*3600;
+  const wt=weekData.reduce((a,d)=>a+(d.secs||0),0);
+  const ad=weekData.filter(d=>d.secs>0).length;
+  const ws=weekData.reduce((a,d)=>a+(d.sessions||0),0);
+  const gm=weekData.filter(d=>(d.secs||0)>=goalSecs).length;
+  const avgS=Math.round(weekData.filter(d=>d.score).reduce((a,d)=>a+d.score,0)/Math.max(1,weekData.filter(d=>d.score).length));
+  const wasted=Math.max(0,(profile.dailyGoal||3)*7-wt/3600);
+  const rows=weekData.map((d,i)=>`<tr>
+    <td>${DAYS[i]}</td><td>${fmtH(d.secs||0)}</td><td>${d.sessions||0}</td>
+    <td style="color:${(d.score||0)>80?"#10b981":(d.score||0)>60?"#f59e0b":"#ef4444"}">${d.score||0}%</td>
+    <td>${(d.secs||0)>=goalSecs?"✅ Goal Met":(d.secs||0)>0?"📖 Partial":"💤 Missed"}</td>
+  </tr>`).join("");
+  const w=window.open("","_blank");
+  w.document.write(`<!DOCTYPE html><html><head><title>MY-COLLEGE Weekly Report</title>
+  <style>
+  *{box-sizing:border-box}
+  body{background:#07080f;color:#e8eaf6;font-family:Arial,sans-serif;padding:40px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h1{font-size:28px;margin-bottom:6px;color:#a78bfa}
+  .meta{color:#7c87a8;margin-bottom:24px;font-size:13px;line-height:1.8}
+  h2{color:#a78bfa;font-size:15px;margin:28px 0 12px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(139,92,246,0.3);padding-bottom:6px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+  .stat{background:#0e1020;border:1px solid rgba(139,92,246,0.25);border-radius:10px;padding:14px}
+  .sl{font-size:10px;color:#7c87a8;letter-spacing:1px;margin-bottom:6px}
+  .sv{font-size:22px;font-weight:900}
+  table{width:100%;border-collapse:collapse;background:#0e1020;border-radius:10px;overflow:hidden}
+  th{background:#1a1d35;padding:10px 14px;text-align:left;color:#7c87a8;font-size:11px;letter-spacing:1px}
+  td{padding:10px 14px;border-bottom:1px solid rgba(139,92,246,0.12);font-size:13px}
+  .sug{background:#0e1020;border-left:3px solid #8b5cf6;padding:12px 16px;margin-bottom:10px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.7}
+  .footer{text-align:center;margin-top:40px;color:#3a4060;font-size:11px;border-top:1px solid rgba(139,92,246,0.15);padding-top:20px}
+  </style></head><body>
+  <h1>📚 MY-COLLEGE Weekly Study Report</h1>
+  <div class="meta">
+    <b style="color:#e8eaf6;font-size:15px">${profile.name||"Student"}</b><br/>
+    College: ${profile.college||"—"} &nbsp;·&nbsp; Class: ${profile.class||"—"} &nbsp;·&nbsp; Branch: ${profile.branch||"—"}<br/>
+    Roll No: ${profile.roll||"—"} &nbsp;·&nbsp; Target Score: ${profile.target||90}% &nbsp;·&nbsp; Daily Goal: ${profile.dailyGoal||3}h<br/>
+    Report: ${new Date().toLocaleString()} &nbsp;·&nbsp; © 2026 Jitumoni
+  </div>
+  <h2>📊 Weekly Summary</h2>
+  <div class="stats">
+    <div class="stat"><div class="sl">TOTAL HOURS</div><div class="sv" style="color:#a78bfa">${(wt/3600).toFixed(1)}h</div></div>
+    <div class="stat"><div class="sl">ACTIVE DAYS</div><div class="sv" style="color:#3b82f6">${ad}/7</div></div>
+    <div class="stat"><div class="sl">AVG FOCUS</div><div class="sv" style="color:#10b981">${avgS}%</div></div>
+    <div class="stat"><div class="sl">HOURS WASTED</div><div class="sv" style="color:#ef4444">${wasted.toFixed(1)}h</div></div>
+  </div>
+  <h2>📅 Daily Breakdown</h2>
+  <table><thead><tr><th>DAY</th><th>STUDY TIME</th><th>SESSIONS</th><th>FOCUS SCORE</th><th>STATUS</th></tr></thead>
+  <tbody>${rows}</tbody></table>
+  <h2>💡 Key Insights</h2>
+  <div class="sug">⏰ You studied ${(wt/3600).toFixed(1)}h this week. Your goal was ${(profile.dailyGoal||3)*7}h. ${wasted>0?"Reclaim "+wasted.toFixed(1)+"h next week by replacing screen time with study time.":"Excellent! You met your weekly goal!"}</div>
+  <div class="sug">📅 ${ad} out of 7 days were active. ${ad<5?"Consistency is the #1 secret of toppers — aim for 6+ active days next week.":"Great consistency! Maintain this routine."}</div>
+  <div class="sug">🎯 Average focus score: ${avgS}%. ${avgS<75?"Try the webcam focus monitor and Pomodoro technique to improve concentration.":"Excellent focus! Keep using the Pomodoro timer."}</div>
+  <div class="sug">🔥 Current streak: ${streak.count} days. ${streak.count<3?"Build your streak — don't break the chain!":"Amazing consistency! You're building a powerful study habit."}</div>
+  <div class="footer">MY-COLLEGE · Student Revolution Platform · © 2026 Jitumoni · All Rights Reserved<br/>Every second you study is an investment in your future 🚀</div>
+  <script>window.onload=()=>setTimeout(()=>window.print(),600);<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+// ── TIPS ──
+document.getElementById("tips-list").innerHTML=[
+  ["🎯","25 min focus block","Deep study, zero distractions. Camera monitors your presence."],
+  ["☕","5 min short break","Rest eyes, stretch, hydrate. Brain consolidates memory."],
+  ["🌿","15 min long break","After 4 cycles. Walk, breathe, eat."],
+  ["🔥","Daily streak","Study every day. Open the app → streak counts."],
+  ["📊","Auto-tracking","Every session saves to your weekly report automatically."],
+].map(([icon,title,desc])=>`
+  <div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid rgba(139,92,246,0.12)">
+    <span style="font-size:20px;flex-shrink:0">${icon}</span>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#e8eaf6;margin-bottom:2px">${title}</div>
+      <div style="font-size:11px;color:#7c87a8;line-height:1.5">${desc}</div>
+    </div>
+  </div>`).join("");
+
+// ── 3D PARTICLE BG ──
+(function(){
+  const canvas=document.getElementById("bg");
+  const ctx=canvas.getContext("2d");
+  let W=canvas.width=window.innerWidth,H=canvas.height=window.innerHeight;
+  const ps=Array.from({length:130},()=>({
+    x:Math.random()*W,y:Math.random()*H,z:Math.random()*800+100,
+    vx:(Math.random()-0.5)*0.35,vy:(Math.random()-0.5)*0.35,vz:(Math.random()-0.5)*0.5,
+    hue:Math.random()>0.5?260:210
+  }));
+  function draw(){
+    ctx.fillStyle="rgba(7,8,15,0.15)";ctx.fillRect(0,0,W,H);
+    ps.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.z+=p.vz;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      if(p.z<50)p.z=900;if(p.z>900)p.z=50;
+      const sc=900/p.z;
+      const sx=(p.x-W/2)*sc+W/2,sy=(p.y-H/2)*sc+H/2;
+      const r=Math.max(0.3,sc*1.4),a=Math.min(0.85,sc*0.45);
+      ctx.beginPath();ctx.arc(sx,sy,r,0,Math.PI*2);
+      ctx.fillStyle=`hsla(${p.hue},85%,72%,${a})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener("resize",()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;});
+})();
+
+// ── INIT ──
+renderAll();
+setInterval(()=>{document.getElementById("pom-cycles").textContent=pomCycles;document.getElementById("pom-total").textContent=fmtT(pomTotal);},1000);
+</script>
+</body>
+</html>
